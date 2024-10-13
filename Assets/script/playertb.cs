@@ -5,13 +5,20 @@ public class playertb : MonoBehaviour
 {
     public int health = 100;
     public Animator animator;
-    public Player playerController; 
+    public Player playerController;
+
+    // Reference to healthtbmc for updating the health bar slider
+    public healthtbmc healthBar; 
 
     void Start()
     {
         animator = GetComponent<Animator>();
+        
+        // Set the initial health slider
+        healthBar.SetMaxHealth(health);
     }
 
+    // Method to decrease health when the player takes damage
     public void TakeDamage1(int damage)
     {
         health -= damage;
@@ -19,6 +26,9 @@ public class playertb : MonoBehaviour
         {
             Die();
         }
+
+        // Update the health slider with the current health
+        healthBar.SetHealth(health);
     }
 
     void Die()
@@ -26,19 +36,18 @@ public class playertb : MonoBehaviour
         SceneManager.LoadScene("gameover");
     }
 
+    // Trigger the attack animation
     public void Attackanim()
     {
-        // Trigger the attack animation
         animator.SetTrigger("Attack1");
     }
 
-    // This method can be called from an Animation Event at the end of the Attack animation
+    // Called at the end of the Attack animation to reset to idle
     public void EndAttackanim()
     {
-        // Set isIdling to true when isAttacking is false
         if (playerController.isAttacking == false)
         {
-            animator.SetBool("isIdling", true); 
+            animator.SetBool("isIdling", true);
         }
     }
 }

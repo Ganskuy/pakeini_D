@@ -15,55 +15,76 @@ public class charamove : MonoBehaviour
     public Text ScoreText;
     public Animator animator;
     public int health = 100;
-    
-    private void Awake(){
+
+    // Reference to healthrun script to control health bar
+    public healthrun healthBar;
+
+    private void Awake()
+    {
         rb = GetComponent<Rigidbody2D>();
-        score=0;
+        score = 0;
+
+        // Set max health when the game starts
+        healthBar.SetMaxHealth(health);
     }
-    
+
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Space)){
-            if(isGrounded == true){
-                rb.AddForce(Vector2.up*JumpForce);
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            if (isGrounded == true)
+            {
+                rb.AddForce(Vector2.up * JumpForce);
                 isGrounded = false;
                 animator.SetBool("isJumping", true);
             }
             if (isGrounded)
+            {
+                animator.SetBool("isJumping", false);
+            }
+        }
+
+        if (isAlive)
         {
-            animator.SetBool("isJumping", false);
+            score += Time.deltaTime * 4;
+            ScoreText.text = Mathf.FloorToInt(score).ToString();
         }
-        }
-
-        if(isAlive){
-            score+=Time.deltaTime*4;
-            ScoreText.text = Mathf.FloorToInt(score).ToString();;
-        }
-
     }
-    private void OnCollisionEnter2D(Collision2D col){
-        if(col.gameObject.CompareTag("ground")){
-            if(isGrounded == false){
+
+    private void OnCollisionEnter2D(Collision2D col)
+    {
+        if (col.gameObject.CompareTag("ground"))
+        {
+            if (isGrounded == false)
+            {
                 isGrounded = true;
             }
             animator.SetBool("isJumping", false);
-
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D col){
-        if(col.tag=="enemy"){
+    private void OnTriggerEnter2D(Collider2D col)
+    {
+        if (col.tag == "enemy")
+        {
             SceneManager.LoadScene("turnbase");
         }
     }
 
-    public void berkurang(int damage){
-    health-=damage;
-    if(health<=0){
-        Die();
+    public void berkurang(int damage)
+    {
+        health -= damage;
+        if (health <= 0)
+        {
+            Die();
+        }
+
+        // Update the health bar based on the new health value
+        healthBar.SetHealth(health);
     }
-   }
-   void Die(){
-    SceneManager.LoadScene("gameover");
-   }
+
+    void Die()
+    {
+        SceneManager.LoadScene("gameover");
+    }
 }
