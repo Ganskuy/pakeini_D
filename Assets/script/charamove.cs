@@ -20,6 +20,12 @@ public class charamove : MonoBehaviour
     // Reference to healthrun script to control health bar
     public healthrun healthBar;
 
+    // AudioSource to play sound effects
+    public AudioSource audioSource;
+
+    // SFX for jumping and running
+    public AudioClip runSFX;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -33,11 +39,29 @@ public class charamove : MonoBehaviour
 
     void Update()
     {
+        // Detect jump input
         if (Input.GetKeyDown(KeyCode.Space))
         {
             Jump();
         }
 
+        // Detect running or movement input (if grounded)
+        if (isGrounded && (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D)))
+        {
+            // Play running sound when moving
+            if (!audioSource.isPlaying || audioSource.clip != runSFX)
+            {
+                audioSource.clip = runSFX;
+                audioSource.Play();
+            }
+        }
+        // Stop running sound when not moving or jumping
+        else if (isGrounded && !Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D) && audioSource.clip == runSFX)
+        {
+            audioSource.Stop();
+        }
+
+        // Only update score when alive
         if (isAlive)
         {
             score += Time.deltaTime * 4;
@@ -47,15 +71,11 @@ public class charamove : MonoBehaviour
 
     public void Jump()
     {
-        if (isGrounded == true)
+        if (isGrounded)
         {
             rb.AddForce(Vector2.up * JumpForce);
             isGrounded = false;
             animator.SetBool("isJumping", true);
-        }
-        if (isGrounded)
-        {
-            animator.SetBool("isJumping", false);
         }
     }
 
@@ -63,11 +83,11 @@ public class charamove : MonoBehaviour
     {
         if (col.gameObject.CompareTag("ground"))
         {
-            if (isGrounded == false)
+            if (!isGrounded)
             {
                 isGrounded = true;
+                animator.SetBool("isJumping", false);
             }
-            animator.SetBool("isJumping", false);
         }
     }
 

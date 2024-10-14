@@ -478,6 +478,8 @@ MonoBehaviour:
   animator: {fileID: 398769278}
   playercontroller: {fileID: 1447776421}
   healthBar: {fileID: 365314998}
+  audioSource: {fileID: 569252306}
+  damageSFX: {fileID: 8300000, guid: 6f2765c849f2b47b996577837243c78c, type: 3}
 --- !u!95 &398769278
 Animator:
   serializedVersion: 5
@@ -2676,6 +2678,8 @@ MonoBehaviour:
   animator: {fileID: 1848360972}
   playerController: {fileID: 660731692}
   healthBar: {fileID: 1802949475}
+  audioSource: {fileID: 569252306}
+  damageSFX: {fileID: 8300000, guid: 6f2765c849f2b47b996577837243c78c, type: 3}
 --- !u!95 &1848360972
 Animator:
   serializedVersion: 5

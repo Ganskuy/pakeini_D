@@ -11,6 +11,10 @@ public class musuhtb : MonoBehaviour
 
     // Reference to healthtbmusuh for updating the health slider
     public healthtbmusuh healthBar; // Link this in the Unity inspector
+    
+    // SFX References
+    public AudioSource audioSource;  // Reference to the AudioSource
+    public AudioClip damageSFX;      // The sound effect for taking damage
 
     void Start()
     {
@@ -25,6 +29,9 @@ public class musuhtb : MonoBehaviour
     {
         health -= damage;
 
+        // Play the damage sound effect
+        audioSource.PlayOneShot(damageSFX);
+
         // Update the health slider whenever health changes
         healthBar.SetHealth(health);
 
@@ -36,7 +43,7 @@ public class musuhtb : MonoBehaviour
 
     void Die()
     {
-        SceneManager.LoadScene("lari"); // Change "2" to the scene name you want to load
+        SceneManager.LoadScene("lari"); // Change "lari" to the scene name you want to load
     }
 
     // Trigger the enemy's attack animation

@@ -10,6 +10,10 @@ public class playertb : MonoBehaviour
     // Reference to healthtbmc for updating the health bar slider
     public healthtbmc healthBar; 
 
+    // SFX References
+    public AudioSource audioSource;   // Reference to the AudioSource
+    public AudioClip damageSFX;       // The sound effect to play when taking damage
+
     void Start()
     {
         animator = GetComponent<Animator>();
@@ -22,13 +26,17 @@ public class playertb : MonoBehaviour
     public void TakeDamage1(int damage)
     {
         health -= damage;
+
+        // Play the damage sound effect
+        audioSource.PlayOneShot(damageSFX);
+
+        // Update the health slider with the current health
+        healthBar.SetHealth(health);
+
         if (health <= 0)
         {
             Die();
         }
-
-        // Update the health slider with the current health
-        healthBar.SetHealth(health);
     }
 
     void Die()
