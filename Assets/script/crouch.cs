@@ -5,7 +5,6 @@ public class PlayerController : MonoBehaviour
     // References
     public BoxCollider2D playerCollider;  // The player's collider
     public Animator animator;             // Animator component for animations
-    public float slideSpeed = 5f;         // Sliding speed while crouching
 
     // Collider size variables
     private Vector2 originalSize;         // Original size of the collider
@@ -22,6 +21,10 @@ public class PlayerController : MonoBehaviour
     private float groundCheckDistance = 0.1f; // Distance to check for ground
 
     private Rigidbody2D rb;               // Reference to Rigidbody2D for movement control
+
+    // Crouch timer
+    // public float crouchDuration = 0.5f;   // Duration to stay crouched (in seconds)
+    private float crouchTimer = 0.0f;     // Timer to track crouch duration
 
     void Start()
     {
@@ -46,10 +49,6 @@ public class PlayerController : MonoBehaviour
         {
             Crouch();
         }
-        else if (Input.GetKeyUp(KeyCode.C))
-        {
-            StandUp();
-        }
 
         // Ensure the character stays grounded
         GroundCheck();
@@ -59,9 +58,19 @@ public class PlayerController : MonoBehaviour
         {
             StickToGround();
         }
+
+        // Update crouch timer and stand up automatically after the crouch duration
+        if (isCrouching)
+        {
+            crouchTimer += Time.deltaTime;
+            if (crouchTimer >= 1)
+            {
+                StandUp();  // Automatically trigger StandUp after the timer exceeds crouch duration
+            }
+        }
     }
 
-    void Crouch()
+    public void Crouch()
     {
         if (!isCrouching)
         {
@@ -75,13 +84,22 @@ public class PlayerController : MonoBehaviour
             // Set crouching state
             isCrouching = true;
 
-            // Apply horizontal slide speed while crouching
-            rb.velocity = new Vector2(slideSpeed, rb.velocity.y);
+            // Reset the crouch timer
+            crouchTimer = 0.0f;
         }
     }
 
     void StandUp()
     {
+        // Perform a ceiling check to ensure there is space above the player to stand
+        Collider2D ceilingCheck = Physics2D.OverlapCircle(transform.position + Vector3.up * originalSize.y / 2, 0.1f, groundLayer);
+
+        if (!isCrouching || ceilingCheck != null)
+        {
+            // If there's an obstacle above, don't stand up
+            return;
+        }
+
         if (isCrouching)
         {
             // Reset collider size and offset to original values
@@ -93,6 +111,9 @@ public class PlayerController : MonoBehaviour
 
             // Reset crouching state
             isCrouching = false;
+
+            // Reset crouch timer when standing up
+            crouchTimer = 0.0f;
         }
     }
 
@@ -123,5 +144,9 @@ public class PlayerController : MonoBehaviour
         // Optional: Visualize the ground check and collider alignment
         Gizmos.color = Color.red;
         Gizmos.DrawLine(transform.position, new Vector3(transform.position.x, transform.position.y - (originalSize.y / 2), transform.position.z));
+
+        // Visualize the ceiling check
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(transform.position + Vector3.up * originalSize.y / 2, 0.1f);
     }
 }
