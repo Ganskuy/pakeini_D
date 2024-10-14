@@ -3,16 +3,24 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class SceneManage : MonoBehaviour
+public class pindahscene : MonoBehaviour
 {
     // Method to load Scene 2 (named "lari" in your project)
     public void toScene2(){
+        Time.timeScale = 1f;
         SceneManager.LoadScene("lari");
     }
 
     // Method to load the Main Menu scene (named "mainmenu" in your project)
     public void toMainMenu(){
+        charamove.ResetScore();
         SceneManager.LoadScene("mainmenu");
+    }
+
+    public void fromgameover(){
+        Time.timeScale = 1f;
+        charamove.ResetScore();
+        SceneManager.LoadScene("lari");
     }
 
     // Method to quit the game

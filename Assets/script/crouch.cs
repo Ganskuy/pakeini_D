@@ -5,6 +5,7 @@ public class PlayerController : MonoBehaviour
     // References
     public BoxCollider2D playerCollider;  // The player's collider
     public Animator animator;             // Animator component for animations
+    public float slideSpeed = 5f;         // Sliding speed while crouching
 
     // Collider size variables
     private Vector2 originalSize;         // Original size of the collider
@@ -18,7 +19,9 @@ public class PlayerController : MonoBehaviour
     // Ground check and position adjustment
     public LayerMask groundLayer;         // Ground layer for checking ground collision
     private bool isGrounded;              // Check if the player is grounded
-    private float groundCheckDistance = 0.05f; // Distance to check for ground
+    private float groundCheckDistance = 0.1f; // Distance to check for ground
+
+    private Rigidbody2D rb;               // Reference to Rigidbody2D for movement control
 
     void Start()
     {
@@ -28,7 +31,12 @@ public class PlayerController : MonoBehaviour
 
         // Define crouch size and offset (half the height of the original collider)
         crouchSize = new Vector2(originalSize.x, originalSize.y / 2);
-        crouchOffset = new Vector2(originalOffset.x, originalOffset.y - originalSize.y / 4);
+
+        // Move the offset upward by half of the crouch height difference
+        crouchOffset = new Vector2(originalOffset.x, originalOffset.y - (originalSize.y - crouchSize.y) / 2);
+
+        // Get the Rigidbody2D component for applying movement
+        rb = GetComponent<Rigidbody2D>();
     }
 
     void Update()
@@ -43,9 +51,14 @@ public class PlayerController : MonoBehaviour
             StandUp();
         }
 
-
         // Ensure the character stays grounded
         GroundCheck();
+
+        // Keep the player grounded while sliding
+        if (isCrouching && isGrounded)
+        {
+            StickToGround();
+        }
     }
 
     void Crouch()
@@ -56,14 +69,14 @@ public class PlayerController : MonoBehaviour
             playerCollider.size = crouchSize;
             playerCollider.offset = crouchOffset;
 
-            // Ensure the player stays grounded by adjusting the position
-            StickToGround();
-
             // Trigger crouch animation
             animator.SetBool("isCrouching", true);
 
             // Set crouching state
             isCrouching = true;
+
+            // Apply horizontal slide speed while crouching
+            rb.velocity = new Vector2(slideSpeed, rb.velocity.y);
         }
     }
 
@@ -75,9 +88,6 @@ public class PlayerController : MonoBehaviour
             playerCollider.size = originalSize;
             playerCollider.offset = originalOffset;
 
-            // Ensure the player stays grounded by adjusting the position
-            StickToGround();
-
             // Trigger stand-up animation
             animator.SetBool("isCrouching", false);
 
@@ -85,6 +95,7 @@ public class PlayerController : MonoBehaviour
             isCrouching = false;
         }
     }
+
     void GroundCheck()
     {
         // Check if the player is grounded by casting a small ray downward from the player's position
@@ -96,17 +107,14 @@ public class PlayerController : MonoBehaviour
 
     void StickToGround()
     {
-        // Calculate the difference in collider size
-        float sizeDifference = (originalSize.y - crouchSize.y) / 2;
+        // Raycast to find the ground distance
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, Mathf.Infinity, groundLayer);
 
-        // Adjust the player's position based on whether they are crouching or standing
-        if (isCrouching)
+        if (hit.collider != null)
         {
-            transform.position = new Vector3(transform.position.x, transform.position.y - sizeDifference, transform.position.z);
-        }
-        else
-        {
-            transform.position = new Vector3(transform.position.x, transform.position.y + sizeDifference, transform.position.z);
+            // Adjust the player's position to stick to the ground
+            float distanceToGround = hit.distance;
+            transform.position = new Vector3(transform.position.x, transform.position.y - distanceToGround + groundCheckDistance, transform.position.z);
         }
     }
 
