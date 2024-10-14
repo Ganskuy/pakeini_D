@@ -32,7 +32,19 @@ public class charamove : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            if (isGrounded == true)
+            Jump();
+        }
+
+        if (isAlive)
+        {
+            score += Time.deltaTime * 4;
+            ScoreText.text = Mathf.FloorToInt(score).ToString();
+        }
+    }
+
+    public void Jump()
+    {
+        if (isGrounded == true)
             {
                 rb.AddForce(Vector2.up * JumpForce);
                 isGrounded = false;
@@ -42,13 +54,6 @@ public class charamove : MonoBehaviour
             {
                 animator.SetBool("isJumping", false);
             }
-        }
-
-        if (isAlive)
-        {
-            score += Time.deltaTime * 4;
-            ScoreText.text = Mathf.FloorToInt(score).ToString();
-        }
     }
 
     private void OnCollisionEnter2D(Collision2D col)

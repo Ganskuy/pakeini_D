@@ -36,7 +36,7 @@ public class musuhtb : MonoBehaviour
 
     void Die()
     {
-        SceneManager.LoadScene("2"); // Change "2" to the scene name you want to load
+        SceneManager.LoadScene("lari"); // Change "2" to the scene name you want to load
     }
 
     // Trigger the enemy's attack animation

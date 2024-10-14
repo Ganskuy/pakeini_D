@@ -6,6 +6,9 @@ using UnityEngine.SceneManagement;
 public class SceneManage : MonoBehaviour
 {
     public void toScene2(){
-        SceneManager.LoadScene("2");
+        SceneManager.LoadScene("lari");
+    }
+    public void toMainMenu(){
+        SceneManager.LoadScene("mainmenu");
     }
 }
