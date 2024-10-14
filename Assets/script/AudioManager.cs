@@ -1,18 +1,17 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class AudioManager : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    [SerializeField] private AudioSource sfxSource;  // Audio source for sound effects
+    public AudioClip buttonClickSound;               // Assign the click sound via Inspector
 
-    // Update is called once per frame
-    void Update()
+    // Play sound on button click
+    public void PlayButtonClickSound()
     {
-        
+        if (sfxSource != null && buttonClickSound != null)
+        {
+            sfxSource.PlayOneShot(buttonClickSound); // Plays the sound once
+        }
     }
 }
